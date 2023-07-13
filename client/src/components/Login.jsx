@@ -51,7 +51,7 @@ function Login() {
     );
   };
 
-  const onSignInSubmit = (e) => {
+   function onSignInSubmit (e)  {
     e.preventDefault();
     let request = {
       phno,
@@ -86,10 +86,10 @@ function Login() {
           console.log("Invalid");
         }
       })
-      .catch((err) => alert(err));
-  };
+      .catch((err) => alert(err))
+      };
 
-  function onSubmitOtp(e) {
+  async function onSubmitOtp(e) {
     e.preventDefault();
 
     const code = otp;
@@ -194,7 +194,7 @@ function Login() {
                       type="password"
                       pattern="[0-9]{6}"
                       required
-                      // style={sty1}
+                      value={otp}
                       onChange={changeHandler}
                     />
                   </div>
