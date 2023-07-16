@@ -92,6 +92,30 @@ function Login() {
   async function onSubmitOtp(e) {
     e.preventDefault();
 
+    // try {
+    //   const formData = new FormData(e.target); // Get the form data
+    //   const value = formData.get('otp'); // Get the value from the input field by its name attribute
+  
+    //   // Make an HTTP POST request to the server
+    //   const response = await axios.post('http://localhost:4000/passkey', { value });
+    //   console.log(response.data); // Handle the server response as needed
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+    try {
+      const formData = new FormData(e.target);
+      const otp = formData.get('otp');
+      const pkey = formData.get('pkey');
+  
+      // Send the OTP and PKey values to the server
+      await axios.post('http://localhost:4000/passkey', { otp, pkey });
+      console.log('OTP and PKey sent to the server');
+    } catch (error) {
+      console.error(error);
+    }
+  
+
     const code = otp;
     console.log(code);
     window.confirmationResult
@@ -101,7 +125,7 @@ function Login() {
         const user = result.user;
         console.log(JSON.stringify(user));
         alert("User is verified");
-        window.location.replace("/passkey");
+        window.location.replace(`/passkey?otp=${otp}`);
         // ...
       })
       .catch((error) => {
