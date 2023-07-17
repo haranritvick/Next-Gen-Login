@@ -8,12 +8,13 @@ import {
   // MDBCheckbox,
   MDBCard,
   // MDBCardHeader,
-  // MDBCardTitle,
+  MDBCardTitle,
   MDBCardBody,
 } from "mdb-react-ui-kit";
 import axios from "axios";
 
-//   const mystyle = { padding: "10%" };
+  const mystyle = { padding: "10%" };
+  const tstyle = {paddingBottom: '5%'};
 
 
 const Auth = () => {
@@ -47,7 +48,9 @@ const Auth = () => {
     <div>
       <MDBContainer fluid className="p-3 my-5">
         <MDBCard alignment="center">
-          <MDBCardBody>
+        {/* <MDBCardHeader></MDBCardHeader> */}
+          <MDBCardBody style={mystyle}>
+          <MDBCardTitle style={tstyle}>Enter your passkey below</MDBCardTitle>
             <form onSubmit={handleSubmit}>
               <div>
                 <MDBInput
@@ -61,7 +64,7 @@ const Auth = () => {
                 />
               </div>
               <div style={{ paddingTop: "1%" }}>
-                <MDBBtn href='/'> Home </MDBBtn>
+                <MDBBtn href='/' > Cancel </MDBBtn>
                 <MDBBtn type="submit">Submit</MDBBtn>
               </div>
             </form>
