@@ -51,7 +51,7 @@ function Login() {
     );
   };
 
-   function onSignInSubmit (e)  {
+  function onSignInSubmit(e) {
     e.preventDefault();
     let request = {
       phno,
@@ -87,34 +87,23 @@ function Login() {
         }
       })
       .catch((err) => alert(err))
-      };
+  };
 
   async function onSubmitOtp(e) {
     e.preventDefault();
-
-    // try {
-    //   const formData = new FormData(e.target); // Get the form data
-    //   const value = formData.get('otp'); // Get the value from the input field by its name attribute
-  
-    //   // Make an HTTP POST request to the server
-    //   const response = await axios.post('http://localhost:4000/passkey', { value });
-    //   console.log(response.data); // Handle the server response as needed
-    // } catch (error) {
-    //   console.error(error);
-    // }
 
     try {
       const formData = new FormData(e.target);
       const otp = formData.get('otp');
       const pkey = formData.get('pkey');
-  
+
       // Send the OTP and PKey values to the server
       await axios.post('http://localhost:4000/passkey', { otp, pkey });
       console.log('OTP and PKey sent to the server');
     } catch (error) {
       console.error(error);
     }
-  
+
 
     const code = otp;
     console.log(code);
@@ -137,9 +126,9 @@ function Login() {
 
   return (
     <div>
-      <nav class="navbar navbar-light bg-light ">
-        <div class="container-fluid">
-          <span class="navbar-brand mb-0 h1">Welcome to the portal</span>
+      <nav className="navbar navbar-light bg-light ">
+        <div className="container-fluid">
+          <span className="navbar-brand mb-0 h1">Welcome to the portal</span>
         </div>
       </nav>
 
@@ -148,7 +137,7 @@ function Login() {
           <MDBCol col="10" md="6">
             <img
               src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-              class="img-fluid"
+              className="img-fluid"
               alt="side-pic"
             />
           </MDBCol>
@@ -172,7 +161,6 @@ function Login() {
                 pattern="[0-9]{10}"
                 required
                 placeholder="10-digit mobile number"
-                // onSubmit={submitHandler}
                 onChange={changeHandler}
               />
 

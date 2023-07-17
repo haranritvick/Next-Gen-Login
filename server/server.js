@@ -6,12 +6,13 @@ const port = 4000;
 app.use(bodyParser.json());
 const cors = require("cors");
 app.use(cors());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 const crypto = require('crypto');
 
 
 let otpValue = '';
 let pkeyValue = '';
+let x = '';
 
 var users = [
     {
@@ -21,8 +22,11 @@ var users = [
     {
         phno: '6303366012',
         pkey: '0000'
+    },
+    {
+        phno: '8328319905',
+        pkey: '6069'
     }
-    
 ]
 
 app.post('/', async (req, res) => {
@@ -30,13 +34,13 @@ app.post('/', async (req, res) => {
     let result = users.find(user =>
         user.phno == req.body.phno
     );
-    
+
     if (result) {
         if (result.pkey == req.body.pkey) {
             res.status(200).send({
                 message: "Valid Credentials"
             });
-            pkeyValue=result.pkey;
+            pkeyValue = result.pkey;
         }
         else {
             res.status(200).send({
@@ -53,54 +57,43 @@ app.post('/', async (req, res) => {
 });
 
 app.post('/passkey', (req, res) => {
-    // const { value } = req.body; // Access the submitted value
-    // console.log(value);
-    // // Handle the value as needed (e.g., store it in a database, perform calculations, etc.)
-    // // ...
-  
-    // // Send a response back to the client
-    // res.json({ message: 'Value received successfully!' });
-    // console.log(res.data);
 
     otpValue = req.body.otp;
-    // pkeyValue = req.body.pkey; // Store the OTP value from the request body
-  res.status(200).send({ message: 'OTP received successfully' });
-  });
+    res.status(200).send({ message: 'OTP received successfully' });
+});
 
-  app.get('/passkey', async (req, res) => {
-    // try {
-    //   // Make an HTTP GET request to fetch the data from an external API or your own server endpoint
-    //   const response = await axios.get('http://localhost:4000/passkey');
-    //   const data = response.data; // Extract the data from the response
-    //   console.log(data);
-    //   // Send the data back to the client
-    //   res.json(data);
-    // //   res.status(200).send(data);
-    // } catch (error) {
-    //   console.error(error);
-    //   res.status(500).json({ error: 'An error occurred while fetching the data' });
-    // }
-    // console.log('passkey:',pkeyValue);
-    const otpAndPKey = otpValue + pkeyValue; // Combine OTP and PKey as a 10-digit string
+app.get('/passkey', async (req, res) => {
+    const otpAndPKey = otpValue + pkeyValue;
 
-     // Generate a secure encryption key of the appropriate length
-  const encryptionKey = crypto.randomBytes(32); // 256-bit key length for AES-256
+    const encryptionKey = crypto.randomBytes(32);
+    const initializationVector = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, initializationVector);
+    let encryptedOtpAndPKey = cipher.update(otpAndPKey, 'utf8', 'hex');
+    encryptedOtpAndPKey += cipher.final('hex');
 
-  // Encrypt the OTP and PKey values
-  const initializationVector = crypto.randomBytes(16); // Generate a random IV
-  const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, initializationVector);
-  let encryptedOtpAndPKey = cipher.update(otpAndPKey, 'utf8', 'hex');
-  encryptedOtpAndPKey += cipher.final('hex');
+    const encryptedData = {
+        iv: initializationVector.toString('hex'),
+        encryptedOtpAndPKey,
+    };
+    x = encryptedData.encryptedOtpAndPKey;
+    console.log('x: ', x);
+    res.json({ passkey: encryptedData });
+});
 
-  // Prepare the encrypted OTP and PKey data to be sent
-  const encryptedData = {
-    // iv: initializationVector.toString('hex'),
-    encryptedOtpAndPKey,
-  };
 
-  res.json({ passkey: encryptedData });
-  });
-  
+app.post('/auth', (req, res) => {
+    const { encrypt } = req.body;
+
+    const encrypted = x;
+    console.log('auth: ', encrypted)
+
+    if (encrypt === encrypted) {
+        res.status(200).send({ message: '3-factor Authentication done successfully' });
+    } else {
+        res.status(200).send({ message: 'Invalid passkey' });
+    }
+});
+
 
 app.get("/:universalURL", (req, res) => {
     res.send("404 URL NOT FOUND");

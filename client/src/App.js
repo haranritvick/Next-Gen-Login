@@ -1,7 +1,7 @@
 import React from 'react';
 import Login from './components/Login';
-// import Getotp from './components/Getotp';
 import Passkey from './components/Passkey';
+import Auth from './components/Auth';
 // import Welcome from './components/Welcome';
 import Pagenotfound from './components/Pagenotfound'
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
@@ -18,7 +18,8 @@ function App() {
             <Route path='/' element={<Login />} />
             {/* <Route path='/getotp' element={<Getotp />} /> */}
             <Route path='/passkey' element={<Passkey />} />
-            <Route path='*' element={<Pagenotfound/>} />
+            <Route path='/auth' element={<Auth />} />
+            <Route path='*' element={<Pagenotfound />} />
           </Routes>
         </Col>
       </Row>
