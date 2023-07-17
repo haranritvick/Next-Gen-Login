@@ -1,14 +1,18 @@
 const express = require('express');
+const axios = require('axios');
 const bodyParser = require("body-parser");
 const app = express();
 const port = 4000;
-// var path = require('path');
-// app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 const cors = require("cors");
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+const crypto = require('crypto');
 
-// app.use(express.static(path.join(__dirname, '/')));
+
+let otpValue = '';
+let pkeyValue = '';
+let x = '';
 
 var users = [
     {
@@ -18,48 +22,25 @@ var users = [
     {
         phno: '6303366012',
         pkey: '0000'
+    },
+    {
+        phno: '8328319905',
+        pkey: '6069'
     }
-    
 ]
-
-// var {phno, pkey} = users;
-
-// console.log(users.phno)
-// app.get('/', (req, res) => {
-//     res.send('Hello World! Haran');
-// });
-
-// app.get('/login', (req, res) => {
-//     res.sendFile(`/client/src/components/Login.jsx`)
-// });
-
-
-// app.get("/", (req, res) => {
-//     res.sendFile(__dirname,"/src/components/Login.jsx")
-// })
-
-// app.get("/", (req, res) => {
-//     res.render("Login")
-// })
 
 app.post('/', async (req, res) => {
 
-    // res.append("Access-Control-Allow-Origin", ["*"]);
-    // res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    // res.append("Access-Control-Allow-Headers", "Content-Type");
-        // console.log(req.body.phno);
     let result = users.find(user =>
         user.phno == req.body.phno
-        // console.log(user);
     );
-
-
 
     if (result) {
         if (result.pkey == req.body.pkey) {
             res.status(200).send({
                 message: "Valid Credentials"
             });
+            pkeyValue = result.pkey;
         }
         else {
             res.status(200).send({
@@ -72,20 +53,51 @@ app.post('/', async (req, res) => {
             message: "User not found"
         });
     }
-
-    // const token = jwt.sign(
-    //     {
-    //       id: result.id,
-    //     },
-    //     JWT_SECRET
-    //   );
-    
-    //   return res.json({ token });
+    console.log(pkeyValue);
 });
 
-// app.get("/:universalURL", (req, res) => {
-//     res.send("404 URL NOT FOUND");
-// });
+app.post('/passkey', (req, res) => {
+
+    otpValue = req.body.otp;
+    res.status(200).send({ message: 'OTP received successfully' });
+});
+
+app.get('/passkey', async (req, res) => {
+    const otpAndPKey = otpValue + pkeyValue;
+
+    const encryptionKey = crypto.randomBytes(32);
+    const initializationVector = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, initializationVector);
+    let encryptedOtpAndPKey = cipher.update(otpAndPKey, 'utf8', 'hex');
+    encryptedOtpAndPKey += cipher.final('hex');
+
+    const encryptedData = {
+        iv: initializationVector.toString('hex'),
+        encryptedOtpAndPKey,
+    };
+    x = encryptedData.encryptedOtpAndPKey;
+    console.log('x: ', x);
+    res.json({ passkey: encryptedData });
+});
+
+
+app.post('/auth', (req, res) => {
+    const { encrypt } = req.body;
+
+    const encrypted = x;
+    console.log('auth: ', encrypted)
+
+    if (encrypt === encrypted) {
+        res.status(200).send({ message: '3-factor Authentication done successfully' });
+    } else {
+        res.status(200).send({ message: 'Invalid passkey' });
+    }
+});
+
+
+app.get("/:universalURL", (req, res) => {
+    res.send("404 URL NOT FOUND");
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

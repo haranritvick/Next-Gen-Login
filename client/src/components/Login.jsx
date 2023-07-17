@@ -51,7 +51,7 @@ function Login() {
     );
   };
 
-  const onSignInSubmit = (e) => {
+  function onSignInSubmit(e) {
     e.preventDefault();
     let request = {
       phno,
@@ -86,11 +86,24 @@ function Login() {
           console.log("Invalid");
         }
       })
-      .catch((err) => alert(err));
+      .catch((err) => alert(err))
   };
 
-  function onSubmitOtp(e) {
+  async function onSubmitOtp(e) {
     e.preventDefault();
+
+    try {
+      const formData = new FormData(e.target);
+      const otp = formData.get('otp');
+      const pkey = formData.get('pkey');
+
+      // Send the OTP and PKey values to the server
+      await axios.post('http://localhost:4000/passkey', { otp, pkey });
+      console.log('OTP and PKey sent to the server');
+    } catch (error) {
+      console.error(error);
+    }
+
 
     const code = otp;
     console.log(code);
@@ -101,7 +114,7 @@ function Login() {
         const user = result.user;
         console.log(JSON.stringify(user));
         alert("User is verified");
-        window.location.replace("/passkey");
+        window.location.replace(`/passkey?otp=${otp}`);
         // ...
       })
       .catch((error) => {
@@ -113,9 +126,9 @@ function Login() {
 
   return (
     <div>
-      <nav class="navbar navbar-light bg-light ">
-        <div class="container-fluid">
-          <span class="navbar-brand mb-0 h1">Welcome to the portal</span>
+      <nav className="navbar navbar-light bg-light ">
+        <div className="container-fluid">
+          <span className="navbar-brand mb-0 h1">Welcome to the portal</span>
         </div>
       </nav>
 
@@ -124,7 +137,7 @@ function Login() {
           <MDBCol col="10" md="6">
             <img
               src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-              class="img-fluid"
+              className="img-fluid"
               alt="side-pic"
             />
           </MDBCol>
@@ -148,7 +161,6 @@ function Login() {
                 pattern="[0-9]{10}"
                 required
                 placeholder="10-digit mobile number"
-                // onSubmit={submitHandler}
                 onChange={changeHandler}
               />
 
@@ -194,7 +206,7 @@ function Login() {
                       type="password"
                       pattern="[0-9]{6}"
                       required
-                      // style={sty1}
+                      value={otp}
                       onChange={changeHandler}
                     />
                   </div>
