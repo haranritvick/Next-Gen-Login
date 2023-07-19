@@ -15,6 +15,11 @@ import {
 function Passkey() {
   const [encryptedData, setEncryptedData] = useState({ iv: '', encryptedOtpAndPKey: '' });
 
+  function handleCancel(){
+    setEncryptedData.encryptedOtpAndPKey=null;
+    window.location.replace('/')
+  }
+
   useEffect(() => {
     fetchEncryptedData();
   }, []);
@@ -53,7 +58,7 @@ function Passkey() {
                     <MDBCardTitle>Your Pass Key is </MDBCardTitle>
                     <MDBCardText>{encryptedData.encryptedOtpAndPKey}</MDBCardText>
                     
-                    <MDBBtn href='/'>Home</MDBBtn>
+                    <MDBBtn onClick={handleCancel}>Cancel</MDBBtn>
                   
                     <MDBBtn onClick={copyToClipboard}>Copy</MDBBtn>
                 </MDBCardBody>
