@@ -128,7 +128,7 @@ function Login() {
     <div>
       <nav className="navbar navbar-light bg-light ">
         <div className="container-fluid">
-          <span className="navbar-brand mb-0 h1">Welcome to the portal</span>
+          <span className="navbar-brand justify-center mb-0 h1" style={{paddingLeft: "40%"}}>Welcome to the portal</span>
         </div>
       </nav>
 
