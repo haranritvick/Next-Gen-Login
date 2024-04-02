@@ -9,5 +9,4 @@ function AlertOtp(){
         </Stack>
     );
 }
-
 export default AlertOtp;
