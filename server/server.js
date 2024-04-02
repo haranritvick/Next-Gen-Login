@@ -9,7 +9,6 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 const crypto = require('crypto');
 
-
 let otpValue = '';
 let pkeyValue = '';
 let x = '';
